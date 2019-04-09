@@ -4,8 +4,8 @@
       <div class="title">{{title}}</div>
       <div class="text">{{msg}}</div>
       <div class="btn-box">
-        <div class="btn-cancel" @click="handlerClose('cancel')">{{cancelText}}</div>
-        <div class="btn-confirm" @click="handlerClose('confirm')">{{confirmText}}</div>
+        <div class="btn-cancel" @click="handleClose('cancel')">{{cancelText}}</div>
+        <div class="btn-confirm" @click="handleClose('confirm')">{{confirmText}}</div>
       </div>
     </div>
   </div>

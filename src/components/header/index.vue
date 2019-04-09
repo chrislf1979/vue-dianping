@@ -4,7 +4,7 @@
       <i class="iconfont icon-left-arrow" />
     </span>
     <span class="text">{{title}}</span>
-    <span class="btn btn-handler" v-if="btn" @click="handlerClick">{{btn}}</span>
+    <span class="btn btn-handle" v-if="btn" @click="handleClick">{{btn}}</span>
   </div>
 </template>
 
@@ -22,8 +22,8 @@ export default {
     }
   },
   methods: {
-    handlerClick() {
-      this.$emit('handlerClick');
+    handleClick() {
+      this.$emit('handleClick');
     }
   }
 };
@@ -53,7 +53,7 @@ export default {
       font-size: 20px;
     }
   }
-  .btn-handler {
+  .btn-handle {
     right: 0;
     padding: 0 15px;
   }

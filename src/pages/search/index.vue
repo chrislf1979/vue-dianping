@@ -6,9 +6,9 @@
       </span>
       <div class="search-box">
         <i class="iconfont icon-search"></i>
-        <input class="search" type="text" v-model.trim="keyword" placeholder="请输入关键字" @keyup.enter="handlerSearch">
+        <input class="search" type="text" v-model.trim="keyword" placeholder="请输入关键字" @keyup.enter="handleSearch">
       </div>
-      <span class="btn-search" @click="handlerSearch">搜索</span>
+      <span class="btn-search" @click="handleSearch">搜索</span>
     </div>
     <template v-if="isAjax">
       <div class="tips">正在搜索，请稍候</div>
@@ -16,7 +16,7 @@
     </template>
     <!-- 主体部分 -->
     <template v-else>
-      <Scroll :data="list" :isHasMore="false" pullUpLoad @load="handlerFetchData" v-if="list.length">
+      <Scroll :data="list" :isHasMore="false" pullUpLoad @load="handleFetchData" v-if="list.length">
         <Item2 :list="list"></Item2>
       </Scroll>
       <div class="tips" v-else>没有找到匹配的商品</div>
@@ -30,6 +30,7 @@ import Loading from '@/components/loading';
 
 export default {
   name: 'Search',
+  components: { Item2, Loading },
   data() {
     return {
       keyword: '',
@@ -38,7 +39,13 @@ export default {
     };
   },
   methods: {
-    async handlerFetchData() {
+    handleSearch() {
+      if (!this.keyword) {
+        return this.$toast({ msg: '关键字不能为空' });
+      }
+      this.$router.push({ name: 'search', query: { word: this.keyword } });
+    },
+    async handleFetchData() {
       if (this.isAjax) {
         return;
       }
@@ -55,14 +62,8 @@ export default {
         this.$toast({ msg: res.msg });
       } catch (e) {
         this.isAjax = false;
-        this.$toast({ msg: '网络开小差，请重试' });
+        this.$toast({ msg: this.$api.msg });
       }
-    },
-    handlerSearch() {
-      if (!this.keyword) {
-        return this.$toast({ msg: '关键字不能为空' });
-      }
-      this.$router.push({ name: 'search', query: { word: this.keyword } });
     }
   },
   watch: {
@@ -72,13 +73,12 @@ export default {
         Object.assign(this.$data, this.$options.data(), {
           keyword: val.query.word
         });
-        this.handlerFetchData();
+        this.handleFetchData();
       },
       immediate: true,
       deep: true
     }
-  },
-  components: { Item2, Loading }
+  }
 };
 </script>
 

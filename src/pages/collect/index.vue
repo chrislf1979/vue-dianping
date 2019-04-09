@@ -14,12 +14,12 @@ import Item2 from '@/components/item2';
 
 export default {
   name: 'Collect',
+  components: { Header, Item2 },
   computed: {
     _list() {
       return this.$store.state.collectList;
     }
-  },
-  components: { Header, Item2 }
+  }
 };
 </script>
 

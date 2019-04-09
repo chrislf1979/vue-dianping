@@ -22,9 +22,10 @@ function showConfirm(config = {}) {
       };
     },
     methods: {
-      handlerClose(type = 'cancel') {
+      handleClose(type = 'cancel') {
         this.isShow = false;
-        type === 'cancel' ? this.cancel() : this.confirm();
+        // 使用setTimeout为了解决路由拦截bug
+        type === 'cancel' ? this.cancel() : setTimeout(this.confirm, 30);
       }
     }
   });

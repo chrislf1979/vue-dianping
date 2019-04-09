@@ -34,11 +34,11 @@
             <span class="text">{{goods.store.address}}</span>
           </li>
           <li class="item-box">
-            <i class="iconfont icon-time" />
+            <i class="iconfont icon-time"/>
             <span class="text">{{'营业时间' + goods.store.businessHours}}</span>
           </li>
           <li class="item-box">
-            <i class="iconfont icon-tel" />
+            <i class="iconfont icon-tel"/>
             <span class="text">{{goods.store.tel}}</span>
           </li>
         </ul>
@@ -65,7 +65,7 @@
               <div class="pic-bar" v-if="item.pics.length" ref="xScroll">
                 <ul class="pic-list">
                   <li class="pic-box" v-for="(_item, _index) in item.pics" :key="_index">
-                    <img class="pic" :src="_item" alt="">
+                    <img class="pic" :src="_item" alt>
                   </li>
                 </ul>
               </div>
@@ -74,10 +74,10 @@
         </ul>
       </Scroll>
       <!-- 底部操作 -->
-      <div class="handler-bar">
-        <div class="btn btn-star" :class="{active: _isCollect}" @click="handlerToggleCollect">{{_isCollect ? '取消收藏' : '加入收藏'}}</div>
-        <div class="btn btn-cart" @click="handlerCart(false)">加入购物车</div>
-        <div class="btn btn-buy" @click="handlerCart(true)">立即购买</div>
+      <div class="handle-bar">
+        <div class="btn btn-star" :class="{active: _isCollect}" @click="handleToggleCollect">{{_isCollect ? '取消收藏' : '加入收藏'}}</div>
+        <div class="btn btn-cart" @click="handleCart(false)">加入购物车</div>
+        <div class="btn btn-buy" @click="handleCart(true)">立即购买</div>
       </div>
     </template>
   </div>
@@ -90,6 +90,7 @@ import Loading from '@/components/loading';
 
 export default {
   name: 'Detail',
+  components: { Header, Star, Loading },
   data() {
     return {
       id: 0,
@@ -109,7 +110,25 @@ export default {
     }
   },
   methods: {
-    async handlerFetchData() {
+    handleCart(isNowBuy) {
+      if (isNowBuy) {
+        this.$router.push({ name: 'payment' });
+      } else {
+        this.$store.commit('$handleCart', { goods: this.goods });
+        this.$store.commit('$handleToggleChecked', { checked: 1 });
+        this.$toast({ msg: '加入购物车成功', duration: 5e2 });
+      }
+    },
+    handleToggleCollect() {
+      if (this.$store.state.isLogin === 0) {
+        return this.$router.replace({
+          name: 'login',
+          query: { redirect: this.$route.path }
+        });
+      }
+      this.$store.commit('$handleCollect', this.goods);
+    },
+    async handleFetchData() {
       if (this.isAjax) {
         return;
       }
@@ -137,26 +156,8 @@ export default {
         }
       } catch (e) {
         this.isAjax = false;
-        this.$toast({ msg: '网络开小差，请重试' });
+        this.$toast({ msg: this.$api.msg });
       }
-    },
-    handlerCart(isNowBuy) {
-      if (isNowBuy) {
-        this.$router.push({ name: 'payment' });
-      } else {
-        this.$store.commit('$handlerCart', { goods: this.goods });
-        this.$store.commit('$handlerToggleChecked', { checked: 1 });
-        this.$toast({ msg: '加入购物车成功', duration: 5e2 });
-      }
-    },
-    handlerToggleCollect() {
-      if (this.$store.state.isLogin === 0) {
-        return this.$router.replace({
-          name: 'login',
-          query: { redirect: this.$route.path }
-        });
-      }
-      this.$store.commit('$handlerCollect', this.goods);
     }
   },
   watch: {
@@ -168,13 +169,12 @@ export default {
         if (this.id > 5 || this.id < 1) {
           return this.$router.replace({ name: 'home' });
         }
-        this.handlerFetchData();
+        this.handleFetchData();
       },
       immediate: true,
       deep: true
     }
-  },
-  components: { Header, Star, Loading }
+  }
 };
 </script>
 
@@ -311,7 +311,7 @@ export default {
       }
     }
   }
-  .handler-bar {
+  .handle-bar {
     position: fixed;
     left: 0;
     right: 0;

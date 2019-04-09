@@ -10,7 +10,7 @@
       </div>
     </scroll>
     <div class="keyboard-box" v-if="isShow" @click.stop>
-      <div class="item-box" :class="{disabled: item === ''}" v-for="(item, index) in _keyboard" :key="index" @click="handlerInput(item)">{{item}}</div>
+      <div class="item-box" :class="{disabled: item === ''}" v-for="(item, index) in _keyboard" :key="index" @click="handleInput(item)">{{item}}</div>
     </div>
   </div>
 </template>
@@ -20,6 +20,7 @@ import Header from '@/components/header';
 
 export default {
   name: 'Payment',
+  components: { Header },
   data() {
     return {
       password: [],
@@ -41,7 +42,7 @@ export default {
     }
   },
   methods: {
-    handlerInput(item) {
+    handleInput(item) {
       if (!['', '删除'].includes(item) && this.password.length < 4) {
         return this.password.push(item);
       }
@@ -51,25 +52,20 @@ export default {
     }
   },
   watch: {
-    password: {
-      handler(val) {
-        if (val.length === 4) {
-          if (val.join('') === this.text) {
-            this.isShow = false;
-            this.$toast({
-              msg: '密码正确，正在为你生成订单',
-              callback: () => this.$router.push({ name: 'home' })
-            });
-          } else {
-            this.$toast({ msg: '密码错误' });
-          }
+    password(val) {
+      if (val.length === 4) {
+        if (val.join('') === this.text) {
+          this.isShow = false;
+          this.$toast({
+            msg: '密码正确，正在为你生成订单',
+            callback: () => this.$router.push({ name: 'home' })
+          });
+        } else {
+          this.$toast({ msg: '密码错误' });
         }
-      },
-      immediate: true,
-      deep: true
+      }
     }
-  },
-  components: { Header }
+  }
 };
 </script>
 

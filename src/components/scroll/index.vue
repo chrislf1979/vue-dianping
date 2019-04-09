@@ -19,6 +19,7 @@ import Loading from '@/components/loading';
 
 export default {
   name: 'Scroll',
+  components: { Loading },
   props: {
     data: {
       type: Array,
@@ -34,7 +35,7 @@ export default {
       type: Number,
       default: 3
     },
-    bufferTime: {
+    delay: {
       type: Number,
       default: 20
     },
@@ -56,10 +57,10 @@ export default {
     }
   },
   mounted() {
-    this.handlerInitScroll();
+    this.handleInitScroll();
   },
   methods: {
-    handlerInitScroll() {
+    handleInitScroll() {
       if (!this.scroll) {
         this.scroll = new this.$BScroll(this.$refs.scroll, {
           click: this.click,
@@ -82,20 +83,15 @@ export default {
     }
   },
   watch: {
-    data: {
-      handler() {
-        this.timer = setTimeout(() => {
-          this.pullUpLoad && this.scroll.finishPullUp();
-          this.pullDownRefresh && this.scroll.finishPullDown();
-          this.scroll.refresh();
-          clearTimeout(this.timer);
-        }, this.bufferTime);
-      },
-      immediate: true,
-      deep: true
+    data(val, oldVal) {
+      this.timer = setTimeout(() => {
+        clearTimeout(this.timer);
+        this.pullUpLoad && this.scroll.finishPullUp();
+        this.pullDownRefresh && this.scroll.finishPullDown();
+        this.scroll.refresh();
+      }, this.delay);
     }
-  },
-  components: { Loading }
+  }
 };
 </script>
 

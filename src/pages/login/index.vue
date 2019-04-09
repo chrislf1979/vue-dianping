@@ -15,7 +15,7 @@
           <i class="iconfont icon-password"></i>
           <input class="input" type="password" v-model.trim="form.password" placeholder="请输入密码">
         </div>
-        <div class="btn-login" @click="handlerLogin">登录</div>
+        <div class="btn-login" @click="handleLogin">登录</div>
       </div>
     </Scroll>
     <template v-else>
@@ -31,6 +31,7 @@ import Loading from '@/components/loading';
 
 export default {
   name: 'Login',
+  components: { Header, Loading },
   data() {
     return {
       form: {
@@ -47,10 +48,21 @@ export default {
     };
   },
   mounted() {
-    this.handlerFetchData();
+    this.handleFetchData();
   },
   methods: {
-    async handlerFetchData() {
+    handleLogin() {
+      if (!this.form.username || !this.form.password) {
+        this.isError = true;
+        return this.$toast({
+          msg: '用户名或密码不能为空',
+          callback: () => (this.isError = false)
+        });
+      }
+      this.$store.commit('$handleLogin', { isLogin: 1, userInfo: this.user });
+      this.$router.replace({ path: this.$route.query.redirect || '/' });
+    },
+    async handleFetchData() {
       try {
         if (this.isAjax) {
           return;
@@ -67,22 +79,10 @@ export default {
         }
       } catch (e) {
         this.isAjax = false;
-        this.$toast({ msg: '网络开小差，请重试' });
+        this.$toast({ msg: this.$api.msg });
       }
-    },
-    handlerLogin() {
-      if (!this.form.username || !this.form.password) {
-        this.isError = true;
-        return this.$toast({
-          msg: '用户名或密码不能为空',
-          callback: () => (this.isError = false)
-        });
-      }
-      this.$store.commit('$handlerLogin', { isLogin: 1, userInfo: this.user });
-      this.$router.replace({ path: this.$route.query.redirect || '/' });
     }
-  },
-  components: { Header, Loading }
+  }
 };
 </script>
 

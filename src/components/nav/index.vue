@@ -1,7 +1,7 @@
 <template>
   <div class="nav-wrap">
     <div class="item-box" v-for="(item, index) in nav" :key="index">
-      <router-link class="_box" tag="div" :to="{name: item.name}" @click.native="handlerLink(item.name)">
+      <router-link class="_box" tag="div" :to="{name: item.name}" @click.native="handleLink(item.name)">
         <i class="num" v-if="item.name === 'cart' && _num > 0">{{_num}}</i>
         <i :class="['iconfont', item.icon]"></i>
         <span class="text">{{item.text}}</span>
@@ -31,9 +31,9 @@ export default {
     }
   },
   methods: {
-    handlerLink(name) {
+    handleLink(name) {
       name === 'cart' &&
-        this.$store.commit('$handlerToggleChecked', { checked: 1 });
+        this.$store.commit('$handleToggleChecked', { checked: 1 });
     }
   }
 };

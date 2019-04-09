@@ -6,7 +6,7 @@
       <div class="hot-address">
         <h2 class="title">热门城市</h2>
         <ul class="list-box">
-          <li class="item-box" v-for="(item, index) in address" :key="index" @click="$store.commit('$handlerAddress', item)">
+          <li class="item-box" v-for="(item, index) in address" :key="index" @click="$store.commit('$handleAddress', item)">
             <span class="text">{{item}}</span>
           </li>
         </ul>
@@ -20,6 +20,7 @@ import Header from '@/components/header';
 
 export default {
   name: 'Address',
+  components: { Header },
   data() {
     return {
       address: [
@@ -42,8 +43,7 @@ export default {
     _nowAddress() {
       return this.$store.state.nowAddress;
     }
-  },
-  components: { Header }
+  }
 };
 </script>
 

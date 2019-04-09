@@ -1,6 +1,6 @@
 <template>
   <div class="slider-wrap">
-    <div class="slider-outer" @touchstart="handlerTouchstart" @touchmove.stop="handlerTouchmove" @touchend="handlerTouchend" @transitionend="handlerTransitionend" ref="slider">
+    <div class="slider-outer" @touchstart="handleTouchstart" @touchmove.stop="handleTouchmove" @touchend="handleTouchend" @transitionend="handleTransitionend" ref="slider">
       <slot>
         <div class="_item" v-for="(item, index) in num" :key="index">
           <div style="width: 100vw; height: 100%;">{{item}}</div>
@@ -14,8 +14,8 @@
 </template>
 
 <script>
-let which = 1;
-let oSlider, length, width;
+let [which, oSlider, length, width] = [1, null, null, null];
+
 export default {
   name: 'Slider',
   props: {
@@ -38,18 +38,18 @@ export default {
     };
   },
   mounted() {
-    this.handlerInit();
+    this.handleInit();
   },
   activated() {
     // 解决在keep-alive因定时间导致无法保存位置bug
-    this.handlerPlay();
+    this.handlePlay();
   },
   deactivated() {
     // 解决在keep-alive因定时间导致无法保存位置bug
     clearInterval(this.timer);
   },
   methods: {
-    handlerInit() {
+    handleInit() {
       oSlider = this.$refs.slider;
       length = oSlider.children.length;
       width = oSlider.parentNode.clientWidth;
@@ -66,9 +66,9 @@ export default {
       oSlider.style.cssText = 'transform: translate3d(-100vw, 0, 0)';
       length = oSlider.children.length;
 
-      this.handlerPlay();
+      this.handlePlay();
     },
-    handlerPlay() {
+    handlePlay() {
       if (this.autoplay) {
         clearInterval(this.timer);
         this.timer = setInterval(() => {
@@ -78,7 +78,7 @@ export default {
         }, this.interval);
       }
     },
-    handlerTouchstart(e) {
+    handleTouchstart(e) {
       if (!this.isCanTouch || length < 2) {
         return;
       }
@@ -90,7 +90,7 @@ export default {
         10
       );
     },
-    handlerTouchmove(e) {
+    handleTouchmove(e) {
       if (!this.isCanTouch || length < 2) {
         return;
       }
@@ -99,11 +99,11 @@ export default {
       oSlider.style.cssText = `transform: translate3d(${which * -width +
         this.diffX}px, 0, 0)`;
     },
-    handlerTouchend(e) {
+    handleTouchend(e) {
       if (length < 2) {
         return;
       }
-      this.handlerPlay();
+      this.handlePlay();
       this.diffX = e.changedTouches[0].clientX - this.startX;
       if (Math.abs(this.diffX) && this.isCanTouch) {
         if (Math.abs(this.diffX) > width / 5) {
@@ -117,7 +117,7 @@ export default {
           -100}vw, 0, 0); transition: transform 0.2s;`;
       }
     },
-    handlerTransitionend() {
+    handleTransitionend() {
       if ([0, length - 1].includes(which)) {
         which = !which ? length - 2 : 1;
         oSlider.style.cssText = `transform: translate3d(${which *

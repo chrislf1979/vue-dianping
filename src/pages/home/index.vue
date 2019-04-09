@@ -7,13 +7,13 @@
       </span>
       <div class="search-box">
         <i class="iconfont icon-search"></i>
-        <input class="search" type="text" v-model.trim="keyword" placeholder="请输入关键字" @keyup.enter="handlerSearch">
+        <input class="search" type="text" v-model.trim="keyword" placeholder="请输入关键字" @keyup.enter="handleSearch">
       </div>
       <span class="btn-search" @click="$router.push({name: isLogin ? 'collect' : 'login'})">
         <i :class="['iconfont', isLogin ? 'icon-star' : 'icon-login']"></i>
       </span>
     </div>
-    <Scroll class="bottom" :data="list" :isHasMore="isHasMore" pullUpLoad @load="handlerFetchData" ref="scroll">
+    <Scroll class="bottom" :data="list" :isHasMore="isHasMore" pullUpLoad @load="handleFetchData" ref="scroll">
       <!-- 轮播图 -->
       <Slider>
         <div class="slider-box" v-for="(item, index) in nav.menus" :key="index">
@@ -53,6 +53,7 @@ import Item from '@/components/item';
 
 export default {
   name: 'Home',
+  components: { Slider, Item },
   data() {
     return {
       nav: {
@@ -232,7 +233,7 @@ export default {
   },
   computed: mapState(['nowAddress', 'isLogin']),
   mounted() {
-    this.handlerFetchData();
+    this.handleFetchData();
   },
   activated() {
     // 解决搜索回来页面不能立即滚动bug
@@ -241,7 +242,13 @@ export default {
       this.$refs.scroll.scroll.refresh();
   },
   methods: {
-    async handlerFetchData() {
+    handleSearch() {
+      if (!this.keyword) {
+        return this.$toast({ msg: '关键字不能为空' });
+      }
+      this.$router.push({ name: 'search', query: { word: this.keyword } });
+    },
+    async handleFetchData() {
       if (!this.isHasMore || this.isAjax) {
         return;
       }
@@ -259,17 +266,10 @@ export default {
         }
       } catch (e) {
         this.isAjax = false;
-        this.$toast({ msg: '网络开小差，请重试' });
+        this.$toast({ msg: this.$api.msg });
       }
-    },
-    handlerSearch() {
-      if (!this.keyword) {
-        return this.$toast({ msg: '关键字不能为空' });
-      }
-      this.$router.push({ name: 'search', query: { word: this.keyword } });
     }
-  },
-  components: { Slider, Item }
+  }
 };
 </script>
 
